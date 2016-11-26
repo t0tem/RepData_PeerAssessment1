@@ -8,15 +8,50 @@ output:
 
 ## Loading and preprocessing the data
 
+We're loading the data directly, without unzipping it
 
+```{r}
+activity <- read.csv(unz("activity.zip", "activity.csv"))
+```
 
 ## What is mean total number of steps taken per day?
 
+We're creating a new data frame with total amount of steps aggregated by date
+and plotting a histogram of this data 
 
+```{r}
+total.by.date <- aggregate(steps ~ date, data = activity, sum)
+hist(total.by.date$steps)
+```
+
+We can check out the mean and median of the total number of steps taken per day
+by calculating some summary statistics of aggregated data frame
+
+```{r}
+summary(total.by.date$steps)
+```
+
+So the mean is 10770, and the median is 10760
 
 ## What is the average daily activity pattern?
 
+To explore the average daily activity pattern we'll first load dplyr package
 
+```{r}
+library(dplyr)
+```
+
+now we can easily group data frame and calculate average number of steps taken per interval, averaged across all days
+
+```{r}
+aver.by.interv <- activity %>% group_by(interval) %>% summarise(steps = mean(steps, na.rm = TRUE))
+with(aver.by.interv, plot(interval, steps, type = "l"))
+
+library(ggplot2)
+ggplot(aver.by.interv, aes( x = interval, y = steps)) + geom_line()
+
+
+```
 
 ## Imputing missing values
 
