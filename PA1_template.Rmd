@@ -45,13 +45,16 @@ now we can easily group data frame and calculate average number of steps taken p
 
 ```{r}
 aver.by.interv <- activity %>% group_by(interval) %>% summarise(steps = mean(steps, na.rm = TRUE))
-with(aver.by.interv, plot(interval, steps, type = "l"))
+```
 
+and make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis) using ggplot2 package (we'll load it first)
+
+```{r}
 library(ggplot2)
 ggplot(aver.by.interv, aes( x = interval, y = steps)) + geom_line()
-
-
 ```
+
+
 
 ## Imputing missing values
 
