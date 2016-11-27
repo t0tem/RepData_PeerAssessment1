@@ -18,14 +18,18 @@ and plotting a histogram of this data
 
 ```r
 total.by.date <- aggregate(steps ~ date, data = activity, sum)
+```
+
+And here is a histogram of the total number of steps taken each day
+
+```r
 hist(total.by.date$steps)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 We can check out the mean and median of the total number of steps taken per day
 by calculating some summary statistics of aggregated data frame
-
 
 ```r
 summary(total.by.date$steps)
@@ -62,7 +66,7 @@ library(ggplot2)
 ggplot(aver.by.interv, aes( x = interval, y = steps)) + geom_line()
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 we can see on the graph that the maximum number of steps happens in the interval somewhere between 7:50
 (i.e. interval value = 750) and 10:00 (interval value = 1000)
@@ -125,7 +129,7 @@ total.by.date.no.NA <- aggregate(steps ~ date, data = activity.no.NA, sum)
 hist(total.by.date.no.NA$steps)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 Let's calculate some summary statistics for the total number of steps taken each day
 
@@ -153,3 +157,38 @@ As we can see our strategy of imputing missing values impacted the Median of dat
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+To address this question we'll need to add a new factor variable 'day' with two levels – “weekday” and “weekend”
+indicating whether a given date is a weekday or weekend day.
+
+first we'll create a vector of weekend days names
+
+```r
+wknd <- c("Sat", "Sun")
+```
+
+And then we'll add a new variable 'day' using 'mutate' from dplyr package paired with 'weekdays' function
+
+```r
+activity.no.NA <- activity.no.NA %>%
+      mutate(date = as.Date(date)) %>%
+      mutate(day = factor(weekdays(date, abbreviate = TRUE) %in% wknd, 
+                          levels = c(FALSE, TRUE), labels = c("weekday", "weekend"))) %>%
+      as.data.frame()
+```
+
+So we can now create a new data frame aggregated by weekday and interval with average number of steps taken
+
+```r
+total.by.wday <- aggregate(steps ~ interval + day, data = activity.no.NA, mean)
+```
+
+And make a panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days. We'll use 'ggplot' for that
+
+```r
+ggplot(total.by.wday, aes( x = interval, y = steps)) + geom_line() + facet_grid(day~.)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+
+
+
