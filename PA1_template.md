@@ -102,5 +102,54 @@ summary(activity)
 ##  NA's   :2304     (Other)   :15840
 ```
 
+so we can see that 'steps' variable is the only one with missing values and there are 2304 of them
+
+### *The strategy for filling in all of the missing values in the dataset*
+We'll fill in missing values with the mean of its' 5-minute interval. To do that we'll use again 'group_by' from 
+dplyr package together with 'mutate' and 'replace'. The result will be directly assigned to a new data frame 'activity.no.NA'
+
+
+```r
+activity.no.NA <- activity %>% 
+      group_by(interval) %>%
+      mutate(steps = replace(steps, is.na(steps), mean(steps, na.rm = TRUE))) %>%
+      as.data.frame()
+```
+
+So now we can repeat the step of aggregating this new data frame by date with total number of steps
+and plotting a histogram of this data 
+
+
+```r
+total.by.date.no.NA <- aggregate(steps ~ date, data = activity.no.NA, sum)
+hist(total.by.date.no.NA$steps)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
+Let's calculate some summary statistics for the total number of steps taken each day
+
+```r
+summary(total.by.date.no.NA$steps)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    9819   10770   10770   12810   21190
+```
+
+recalling the initial result of dataset with missing values
+
+```r
+summary(total.by.date$steps)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    8841   10760   10770   13290   21190
+```
+
+As we can see our strategy of imputing missing values impacted the Median of dataset (changed from 10760 to 10770) but not the Mean (stayed equal 10770)
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
