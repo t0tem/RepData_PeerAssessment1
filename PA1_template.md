@@ -40,6 +40,30 @@ So the mean is 10770, and the median is 10760
 
 ## What is the average daily activity pattern?
 
+To explore the average daily activity pattern we'll first load dplyr package
+
+
+```r
+library(dplyr)
+```
+
+now we can easily group data frame and calculate average number of steps taken per interval, averaged across all days
+
+
+```r
+aver.by.interv <- activity %>% group_by(interval) %>% summarise(steps = mean(steps, na.rm = TRUE))
+```
+
+and make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis) using ggplot2 package (we'll load it first)
+
+
+```r
+library(ggplot2)
+ggplot(aver.by.interv, aes( x = interval, y = steps)) + geom_line()
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
 
 
 ## Imputing missing values
