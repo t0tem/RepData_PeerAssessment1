@@ -64,10 +64,43 @@ ggplot(aver.by.interv, aes( x = interval, y = steps)) + geom_line()
 
 ![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
+we can see on the graph that the maximum number of steps happens in the interval somewhere between 7:50
+(i.e. interval value = 750) and 10:00 (interval value = 1000)
+for a precise calculation we'll use 'which.max' function subsetting our aggregated data frame 
 
+
+```r
+aver.by.interv[which.max(aver.by.interv$steps),]
+```
+
+```
+## # A tibble: 1 × 2
+##   interval    steps
+##      <int>    <dbl>
+## 1      835 206.1698
+```
+
+so we see that the maximum average number of steps is 206.17 and it happens in the 5-minute interval beginning at 8:35
 
 ## Imputing missing values
 
+To check the total number of missing values in the dataset we'll calculate some simple summary statistics
+
+
+```r
+summary(activity)
+```
+
+```
+##      steps                date          interval     
+##  Min.   :  0.00   2012-10-01:  288   Min.   :   0.0  
+##  1st Qu.:  0.00   2012-10-02:  288   1st Qu.: 588.8  
+##  Median :  0.00   2012-10-03:  288   Median :1177.5  
+##  Mean   : 37.38   2012-10-04:  288   Mean   :1177.5  
+##  3rd Qu.: 12.00   2012-10-05:  288   3rd Qu.:1766.2  
+##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
+##  NA's   :2304     (Other)   :15840
+```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
