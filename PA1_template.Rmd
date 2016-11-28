@@ -10,7 +10,7 @@ output:
 
 We're loading the data directly, without unzipping it
 
-```{r}
+```{r echo = TRUE}
 activity <- read.csv(unz("activity.zip", "activity.csv"))
 ```
 
@@ -19,18 +19,18 @@ activity <- read.csv(unz("activity.zip", "activity.csv"))
 We're creating a new data frame with total amount of steps aggregated by date
 and plotting a histogram of this data 
 
-```{r}
+```{r echo = TRUE}
 total.by.date <- aggregate(steps ~ date, data = activity, sum)
 ```
 
 And here is a histogram of the total number of steps taken each day
-```{r}
+```{r echo = TRUE}
 hist(total.by.date$steps)
 ```
 
 We can check out the mean and median of the total number of steps taken per day
 by calculating some summary statistics of aggregated data frame
-```{r}
+```{r echo = TRUE}
 summary(total.by.date$steps)
 ```
 
@@ -40,19 +40,19 @@ So the mean is 10770, and the median is 10760
 
 To explore the average daily activity pattern we'll first load dplyr package
 
-```{r message = FALSE}
+```{r message = FALSE, echo = TRUE}
 library(dplyr)
 ```
 
 now we can easily group data frame and calculate average number of steps taken per interval, averaged across all days
 
-```{r}
+```{r echo = TRUE}
 aver.by.interv <- activity %>% group_by(interval) %>% summarise(steps = mean(steps, na.rm = TRUE))
 ```
 
 and make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis) using ggplot2 package (we'll load it first)
 
-```{r message = FALSE}
+```{r message = FALSE, echo = TRUE}
 library(ggplot2)
 ggplot(aver.by.interv, aes( x = interval, y = steps)) + geom_line()
 ```
@@ -61,7 +61,7 @@ we can see on the graph that the maximum number of steps happens in the interval
 (i.e. interval value = 750) and 10:00 (interval value = 1000)
 for a precise calculation we'll use 'which.max' function subsetting our aggregated data frame 
 
-```{r}
+```{r echo = TRUE}
 aver.by.interv[which.max(aver.by.interv$steps),]
 ```
 
@@ -71,7 +71,7 @@ so we see that the maximum average number of steps is 206.17 and it happens in t
 
 To check the total number of missing values in the dataset we'll calculate some simple summary statistics
 
-```{r}
+```{r echo = TRUE}
 summary(activity)
 ```
 
@@ -81,7 +81,7 @@ so we can see that 'steps' variable is the only one with missing values and ther
 We'll fill in missing values with the mean of its' 5-minute interval. To do that we'll use again 'group_by' from 
 dplyr package together with 'mutate' and 'replace'. The result will be directly assigned to a new data frame 'activity.no.NA'
 
-```{r}
+```{r echo = TRUE}
 activity.no.NA <- activity %>% 
       group_by(interval) %>%
       mutate(steps = replace(steps, is.na(steps), mean(steps, na.rm = TRUE))) %>%
@@ -92,18 +92,18 @@ activity.no.NA <- activity %>%
 So now we can repeat the step of aggregating this new data frame by date with total number of steps
 and plotting a histogram of this data 
 
-```{r}
+```{r echo = TRUE}
 total.by.date.no.NA <- aggregate(steps ~ date, data = activity.no.NA, sum)
 hist(total.by.date.no.NA$steps)
 ```
 
 Let's calculate some summary statistics for the total number of steps taken each day
-```{r}
+```{r echo = TRUE}
 summary(total.by.date.no.NA$steps)
 ```
 
 recalling the initial result of dataset with missing values
-```{r}
+```{r echo = TRUE}
 summary(total.by.date$steps)
 ```
 
@@ -115,12 +115,12 @@ To address this question we'll need to add a new factor variable 'day' with two 
 indicating whether a given date is a weekday or weekend day.
 
 first we'll create a vector of weekend days names
-```{r}
+```{r echo = TRUE}
 wknd <- c("Sat", "Sun")
 ```
 
 And then we'll add a new variable 'day' using 'mutate' from dplyr package paired with 'weekdays' function
-```{r}
+```{r echo = TRUE}
 activity.no.NA <- activity.no.NA %>%
       mutate(date = as.Date(date)) %>%
       mutate(day = factor(weekdays(date, abbreviate = TRUE) %in% wknd, 
@@ -130,12 +130,12 @@ activity.no.NA <- activity.no.NA %>%
 ```
 
 So we can now create a new data frame aggregated by weekday and interval with average number of steps taken
-```{r}
+```{r echo = TRUE}
 total.by.wday <- aggregate(steps ~ interval + day, data = activity.no.NA, mean)
 ```
 
 And make a panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days. We'll use 'ggplot' for that
-```{r}
+```{r echo = TRUE}
 ggplot(total.by.wday, aes( x = interval, y = steps)) + geom_line() + facet_grid(day~.)
 ```
 
